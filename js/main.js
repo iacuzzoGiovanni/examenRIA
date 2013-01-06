@@ -10,11 +10,33 @@
 	"use strict";
 
 	// --- global vars
+	var $content = $("#content");
 	var $listeDesSeries = $("#seriesList ul");
+	var eSignIn = $("#firstLog");
 
 	// --- methods
+	var checkIfAlreadyLogIn = function(){
+		if(window.localStorage.length == 0){
+			$content.hide();
+		}else{
+			eSignIn.remove();
+			$content.show();
+			listSeries();
+		}
+	}; // On vérifie si la personne s'est déja servie ou pas de l'app
+
+	var registerUser = function(e){
+		e.preventDefault();
+		var prenom = $("#prenom").val();
+		if(!prenom == ""){
+			window.localStorage.setItem('prenom', prenom);
+			eSignIn.slideUp();
+			$content.show();
+			listSeries();
+		}
+	}; // On enregistre l'utilisateur en récupérant son prénom simplement
+
 	var listSeries = function(){
-		// On affiche tout les titres des séries se trouvant dans la base de donnée de betaseries
 		$.ajax(
 			{
 				url:"http://api.betaseries.com/shows/display/all.json?key=81e3d2922ed3",
@@ -30,28 +52,41 @@
 				}
 			}
 		)
-	};
+	}; // On affiche tout les titres des séries se trouvant dans la base de donnée de betaseries
 
 	var search = function(e){
-		// On récupère la valeur du champ de recherche
-		var filter = $(this).val();
+		$listeDesSeries.empty();
+		var sKeyWord = $("#seriesSearch").val();
 
-		// On parcour toute la liste des séries
-        $(".serie").each(function(){
-            // Si l'élement de la liste ne contient pas le texte de recherche on le cache
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).hide();
-            // On montre la liste des séries si la recherche à aboutie à un résultat
-            } else {
-                $(this).show();
-            }
-        });
-	};
+		if(sKeyWord === ""){
+			listSeries();
+		}else{
+			$.ajax(
+				{
+					url:"http://api.betaseries.com/shows/search.json?title=" + sKeyWord + "&key=81e3d2922ed3",
+					type:"get",
+					dataType: "jsonp",
+					success:function(e){
+						for (var i = 0; i<e.root.shows.length; i++) {
+							$listeDesSeries.append('<li class="serie">' + e.root.shows[i].title  + '</li>');
+						};
+					},
+					error:function(e,f,g){
+						$listeDesSeries.append('<li class="errors">Une erreur s\'est produite lors du traitement de la requête</li>');
+					}
+				}
+			)
+		}
+	}; // On recherche une série particulière à l'aide des mots entrés par l'utilisateur
 
 	$( function () {
 		// --- onload routines
-		listSeries();
+		checkIfAlreadyLogIn();
+		$("#prenom").val('');
+		$("#readyToGo").on("click", registerUser);
 		$("#seriesSearch").on("keyup", search);
+		console.log(window.localStorage);
+		window.localStorage.clear();
 	} );
 
 }( jQuery ) );
