@@ -322,6 +322,9 @@ li {
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 144dpi) {
   /* Style adjustments for high resolution devices */
+  #firstLog {
+    background-size: 100px 100px;
+  }
 }
 /* ==========================================================================
    Print styles.
