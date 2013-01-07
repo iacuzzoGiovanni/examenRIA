@@ -18,6 +18,8 @@
 	var bMenu = false;
 	var bSearch = false;
 	var $nav = $("nav");
+	var iCurrentPage;
+	var $toAdd = $("#toAdd");
 
 	// --- methods
 	var checkIfAlreadyLogIn = function(){
@@ -79,9 +81,8 @@
 					type:"get",
 					dataType: "jsonp",
 					success:function(e){
-						console.log(e);
 						for (var i = 0; i<e.root.shows.length; i++) {
-							$listeDesSeries.append('<li class="serie">' + e.root.shows[i].title  + '</li>');
+							$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-plus-circled"></button></li>');
 						};
 					},
 					error:function(e,f,g){
@@ -138,7 +139,7 @@
 				  	//effectuer
 				  });
 		}
-	};
+	}; // On anime l'interface
 
 	var showHideSearch = function(e){
 		if(bSearch){
@@ -166,7 +167,29 @@
 				  	//effectuer
 				  });
 		}
+	}; // On montre ou as la zone de recherche
+
+	var goToAddPage = function(e){
+		iCurrentPage = 2;
+		currentPageName();
+		showHideMenu();
 	};
+
+	var currentPageName = function(){
+		var $pageName = $("nav h2");
+		switch (iCurrentPage) {
+			case 1:
+			$pageName.text("-- liste de mes séries --")
+			break;
+			case 2:
+			$pageName.text("-- ajouter une série --")
+			break;
+		}	
+	};
+
+	var addSerie = function(e){
+		console.log('coucou');
+	}
 
 	$( function () {
 		// --- onload routines
@@ -177,6 +200,8 @@
 		$(".icon-search").on("click", showHideSearch);
 		$("#seriesSearch").on("keyup", search);
 		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
+		$toAdd.on("click", goToAddPage);
+		$(".serie").on("click", addSerie);
 		console.log(window.localStorage);
 		//window.localStorage.clear();
 	} );

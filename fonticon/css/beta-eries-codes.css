@@ -2,5 +2,6 @@
 
 
 .icon-menu:before { content: '\2630'; } /* '☰' */
+.icon-plus-circled:before { content: '\2795'; } /* '➕' */
 .icon-user:before { content: '👤'; } /* '\1f464' */
 .icon-search:before { content: '🔍'; } /* '\1f50d' */
