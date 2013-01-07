@@ -14,16 +14,20 @@
 	var $listeDesSeries = $("#seriesList ul");
 	var eSignIn = $("#firstLog");
 	var $sideMenu = $("#sideMenu");
+	var $searchBox = $("#search");
 	var bMenu = false;
+	var bSearch = false;
 	var $nav = $("nav");
 
 	// --- methods
 	var checkIfAlreadyLogIn = function(){
 		if(window.localStorage.length == 0){
 			$content.hide();
+			$nav.hide();
 		}else{
 			eSignIn.remove();
 			$content.show();
+			$nav.show();
 			listSeries();
 		}
 	}; // On vérifie si la personne s'est déja servie ou pas de l'app
@@ -36,14 +40,16 @@
 			eSignIn.animate({
 				    top: '-=100%'
 				  }, 1000, function() {
+				  	$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
 				    $content.show();
+				    $nav.show();
 					listSeries();
 				  });	
 		}
 	}; // On enregistre l'utilisateur en récupérant son prénom simplement
 
 	var listSeries = function(){
-		$.ajax(
+		/*$.ajax(
 			{
 				url:"http://api.betaseries.com/shows/display/all.json?key=81e3d2922ed3",
 				type:"get",
@@ -57,7 +63,7 @@
 					$listeDesSeries.append('<li class="errors">Une erreur s\'est produite lors du traitement de la requête</li>');
 				}
 			}
-		)
+		)*/
 	}; // On affiche tout les titres des séries se trouvant dans la base de donnée de betaseries
 
 	var search = function(e){
@@ -90,35 +96,73 @@
 		if(bMenu){
 			bMenu = false;
 			$sideMenu.animate({
-				    left: '-=45%'
+				    left: '-=75%'
 				  }, 1000, function() {
 				  	//effectuer
 				  });
 			$content.animate({
-				    left: '-=45%'
+				    left: '-=75%'
 				  }, 1000, function() {
 				  	//effectuer
 				  });
 			$nav.animate({
-				    left: '-=45%'
+				    left: '-=75%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$searchBox.animate({
+				    left: '-=75%'
 				  }, 1000, function() {
 				  	//effectuer
 				  });
 		}else{
 			bMenu = true;
 			$sideMenu.animate({
-				    left: '+=45%'
+				    left: '+=75%'
 				  }, 1000, function() {
 				  	//effectuer
 				  });
 			$content.animate({
-				    left: '+=45%'
+				    left: '+=75%'
 				  }, 1000, function() {
 				  	//effectuer
 				  });
 			$nav.animate({
-				    left: '+=45%'
+				    left: '+=75%'
 				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$searchBox.animate({
+				    left: '+=75%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+		}
+	};
+
+	var showHideSearch = function(e){
+		if(bSearch){
+			bSearch = false;
+			$content.animate({
+				    marginTop: '-=2em'
+				  }, 500, function() {
+				  	//effectuer
+				  });
+			$searchBox.animate({
+				    top: '-=2em'
+				  }, 500, function() {
+				  	//effectuer
+				  });
+		}else{
+			bSearch = true;
+			$content.animate({
+				    marginTop: '+=2em'
+				  }, 500, function() {
+				  	//effectuer
+				  });
+			$searchBox.animate({
+				    top: '+=2em'
+				  }, 500, function() {
 				  	//effectuer
 				  });
 		}
@@ -130,7 +174,9 @@
 		$("#prenom").val('');
 		$("#readyToGo").on("click", registerUser);
 		$(".icon-menu").on("click", showHideMenu);
+		$(".icon-search").on("click", showHideSearch);
 		$("#seriesSearch").on("keyup", search);
+		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
 		console.log(window.localStorage);
 		//window.localStorage.clear();
 	} );

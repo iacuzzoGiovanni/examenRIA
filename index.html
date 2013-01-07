@@ -29,38 +29,37 @@
                 <li class="action icon-search"><span>search</span></li>
             </ul>
         </nav>
-        <div id="content">
-            <section id="seriesList">
-                <h2>Toutes les séries disponibles</h2>
-                <section id="search">
-                    <h3>Rechercher vos séries</h3>
-                    <form action="#">
-                        <fieldset>
-                            <input type="search" name="seriesSearch" id="seriesSearch" placeholder="rechercher"/>
-                        </fieldset>
-                    </form>
-                </section>
-                <ul>
-                    
-                </ul>
-            </section>
-        </div>
         <aside id="firstLog">
             <h1>BetaSeries</h1>
             <form action="#">
                 <fieldset>
                     <label for="prenom" class="icon-user"><span>iconUser</span></label>
                     <input type="text" id="prenom" placeholder="prenom"/>
-                    <button id="readyToGo">C'est parti</button>
+                    <button id="readyToGo">C'est parti&nbsp;!</button>
                 </fieldset>
             </form>
         </aside>
         <aside id="sideMenu">
+            <h1>Que veux tu faire</h1>
             <ul>
                 <li><a href="#">lister mes séries</a></li>
                 <li><a href="#">ajouter une série</a></li>
             </ul>
         </aside>
+        <aside id="search">
+            <form action="#">
+                <fieldset>
+                    <input type="search" name="seriesSearch" id="seriesSearch" placeholder="rechercher"/>
+                </fieldset>
+            </form>
+        </aside>
+        <div id="content">
+            <section id="seriesList">
+                <ul>
+                    
+                </ul>
+            </section>
+        </div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
