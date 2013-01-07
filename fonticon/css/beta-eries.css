@@ -30,4 +30,6 @@
 /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
 
+.icon-menu:before { content: '\2630'; } /* '☰' */
 .icon-user:before { content: '👤'; } /* '\1f464' */
+.icon-search:before { content: '🔍'; } /* '\1f50d' */

@@ -13,6 +13,9 @@
 	var $content = $("#content");
 	var $listeDesSeries = $("#seriesList ul");
 	var eSignIn = $("#firstLog");
+	var $sideMenu = $("#sideMenu");
+	var bMenu = false;
+	var $nav = $("nav");
 
 	// --- methods
 	var checkIfAlreadyLogIn = function(){
@@ -30,9 +33,12 @@
 		var prenom = $("#prenom").val();
 		if(!prenom == ""){
 			window.localStorage.setItem('prenom', prenom);
-			eSignIn.slideUp();
-			$content.show();
-			listSeries();
+			eSignIn.animate({
+				    top: '-=100%'
+				  }, 1000, function() {
+				    $content.show();
+					listSeries();
+				  });	
 		}
 	}; // On enregistre l'utilisateur en récupérant son prénom simplement
 
@@ -67,6 +73,7 @@
 					type:"get",
 					dataType: "jsonp",
 					success:function(e){
+						console.log(e);
 						for (var i = 0; i<e.root.shows.length; i++) {
 							$listeDesSeries.append('<li class="serie">' + e.root.shows[i].title  + '</li>');
 						};
@@ -79,14 +86,53 @@
 		}
 	}; // On recherche une série particulière à l'aide des mots entrés par l'utilisateur
 
+	var showHideMenu = function(e){
+		if(bMenu){
+			bMenu = false;
+			$sideMenu.animate({
+				    left: '-=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$content.animate({
+				    left: '-=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$nav.animate({
+				    left: '-=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+		}else{
+			bMenu = true;
+			$sideMenu.animate({
+				    left: '+=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$content.animate({
+				    left: '+=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+			$nav.animate({
+				    left: '+=45%'
+				  }, 1000, function() {
+				  	//effectuer
+				  });
+		}
+	};
+
 	$( function () {
 		// --- onload routines
 		checkIfAlreadyLogIn();
 		$("#prenom").val('');
 		$("#readyToGo").on("click", registerUser);
+		$(".icon-menu").on("click", showHideMenu);
 		$("#seriesSearch").on("keyup", search);
 		console.log(window.localStorage);
-		window.localStorage.clear();
+		//window.localStorage.clear();
 	} );
 
 }( jQuery ) );
