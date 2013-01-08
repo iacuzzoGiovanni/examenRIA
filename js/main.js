@@ -26,10 +26,12 @@
 		if(window.localStorage.length == 0){
 			$content.hide();
 			$nav.hide();
+			$searchBox.hide();
 		}else{
 			eSignIn.remove();
 			$content.show();
 			$nav.show();
+			$searchBox.show();
 			listSeries();
 		}
 	}; // On vérifie si la personne s'est déja servie ou pas de l'app
@@ -45,28 +47,25 @@
 				  	$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
 				    $content.show();
 				    $nav.show();
-					listSeries();
+				    var ep = {"type": undefined};
+					listSeries(ep);
 				  });	
 		}
 	}; // On enregistre l'utilisateur en récupérant son prénom simplement
 
-	var listSeries = function(){
-		/*$.ajax(
-			{
-				url:"http://api.betaseries.com/shows/display/all.json?key=81e3d2922ed3",
-				type:"get",
-				dataType: "jsonp",
-				success:function(e){
-					for (var i = 0; i<e.root.shows.length; i++) {
-						$listeDesSeries.append('<li class="serie">' + e.root.shows[i].title  + '</li>');
-					};
-				},
-				error:function(e,f,g){
-					$listeDesSeries.append('<li class="errors">Une erreur s\'est produite lors du traitement de la requête</li>');
-				}
+	var listSeries = function(e){
+		iCurrentPage = 1;
+		currentPageName();
+		if(e === undefined){
+			showHideMenu();
+		}
+		for( var serie in window.localStorage ){
+			if( serie.substring( 0, 6 ) === "serie_" ){
+				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+				$listeDesSeries.append('<li class="serie">' + dataSerie.title + '</li>');				
 			}
-		)*/
-	}; // On affiche tout les titres des séries se trouvant dans la base de donnée de betaseries
+		}
+	}; // On affiche tout les titres des séries ajoutée par l'utilisateur
 
 	var search = function(e){
 		$listeDesSeries.empty();
@@ -142,6 +141,7 @@
 	}; // On anime l'interface
 
 	var showHideSearch = function(e){
+		$searchBox.show();
 		if(bSearch){
 			bSearch = false;
 			$content.animate({
@@ -173,6 +173,7 @@
 		iCurrentPage = 2;
 		currentPageName();
 		showHideMenu();
+		$listeDesSeries.empty();
 	};
 
 	var currentPageName = function(){
@@ -187,23 +188,55 @@
 		}	
 	};
 
-	var addSerie = function(e){
-		console.log('coucou');
-	}
+	var addSerie = function(event){
+		var objetThis = $(this);
+			
+		getInfoSerie($(this).parent().attr("data-url"), function(e){
+			var data = {},
+				laSerie = {"url": objetThis.parent().attr("data-url"),
+				   	   "title" : objetThis.parent().attr("data-titre")
+				      };
+
+			data.banner = e.root.show.banner;
+			data.description = e.root.show.description;
+			data.genres = e.root.show.genres;
+			data.id_thetvdb = e.root.show.id_thetvdb;
+			data.seasons = e.root.show.seasons;
+			laSerie.infosSerie = data;
+			window.localStorage.setItem("serie_" + objetThis.parent().attr("data-titre"), JSON.stringify(laSerie));
+		});
+			
+	};
+
+	var getInfoSerie = function(urlSerie, successCallback){
+		$.ajax(
+				{
+					url:"http://api.betaseries.com/shows/display/" + urlSerie + ".json?key=81e3d2922ed3",
+					type:"get",
+					dataType: "jsonp",
+					success:function(e){						
+						successCallback.apply(null, [e]);
+					},
+					error:function(e,f,g){
+						$listeDesSeries.append('<li class="errors">Une erreur s\'est produite lors du traitement de la requête</li>');
+					}
+				}
+			)
+	};
 
 	$( function () {
 		// --- onload routines
-		checkIfAlreadyLogIn();
 		$("#prenom").val('');
+		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
+		checkIfAlreadyLogIn();
 		$("#readyToGo").on("click", registerUser);
 		$(".icon-menu").on("click", showHideMenu);
 		$(".icon-search").on("click", showHideSearch);
 		$("#seriesSearch").on("keyup", search);
-		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
 		$toAdd.on("click", goToAddPage);
-		$(".serie").on("click", addSerie);
+		$(".icon-plus-circled").live("click", addSerie);
+		$("#toList").on("click", listSeries);
 		console.log(window.localStorage);
-		//window.localStorage.clear();
 	} );
 
 }( jQuery ) );
