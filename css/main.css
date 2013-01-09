@@ -446,6 +446,9 @@ nav h2 {
   text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
   filter: dropshadow(color=rgba(255, 255, 255, 0.5), offx=0, offy=1);
 }
+.icon-plus-circled {
+  margin-right: 1em;
+}
 .serie span {
   float: left;
   display: block;
