@@ -63,7 +63,6 @@
 		$listeDesSeries.empty();
 		iCurrentPage = 1;
 		currentPageName();
-		console.log(e);
 		if(e.type === "click"){
 			showHideMenu();
 		}
@@ -178,10 +177,12 @@
 		var $pageName = $("nav h2");
 		switch (iCurrentPage) {
 			case 1:
-			$pageName.text("-- liste de mes séries --")
+			$pageName.text("-- liste de mes séries --");
 			break;
 			case 2:
-			$pageName.text("-- ajouter une série --")
+			$pageName.text("-- ajouter une série --");
+			case 3:
+			$pageName.text("-- mon planning --");
 			break;
 		}	
 	}; // On regarde si l'id de la page correspond a une des pages et affiche la parge sur laquelle on se trouve
@@ -196,6 +197,7 @@
 				      };
 
 			data.banner = e.root.show.banner;
+			data.channel = e.root.show.network;
 			laSerie.infosSerie = data;
 			window.localStorage.setItem("serie_" + objetThis.parent().attr("data-titre"), JSON.stringify(laSerie));
 		});
@@ -230,15 +232,13 @@
 				  });
 		
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
-			console.log(e);
 			$infosBox.attr('data-url', e.root.show.url);
 			$infosBox.attr('data-titre', e.root.show.title);
 			$("#infosSerie img").attr('src', e.root.show.banner);
 			$("#infosSerie h1").text(e.root.show.title);
 			$(".description").text(e.root.show.description);
 			$(".genre p").text(e.root.show.genres);
-			//console.log(e.root.show.seasons.length());
-			$(".saisons p").text(calculateNumberOfSeasons(e.root.show.seasons));
+			$(".saisons p").text(e.root.show.seasons[0].length);
 		});
 	}; //On affiche mes infos d'une série
 
@@ -294,9 +294,6 @@
 				  });
 
 		getDataSerie(objetThis.parent().attr("data-url"), function(e){
-			console.log(e);
-			console.log(e.root.seasons.length);	
-
 			for(var i = 0; i<e.root.seasons.length; i++){
 				$maSerie.append('<h2>Saison ' + (parseInt(i)+parseInt(1)) + '</h2>');
 
@@ -325,10 +322,29 @@
 	};
 
 	var afficherMonPlanning = function(e){
+		$listeDesSeries.empty();
+		iCurrentPage = 3;
+		currentPageName();
+		showHideMenu();
 		getDataPlanning(function(e){
-			console.log(e);
+			for( var serie in window.localStorage ){
+				if( serie.substring( 0, 6 ) === "serie_" ){
+					var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+					$listeDesSeries.append('<li><h2 class="titrePlanning">' + dataSerie.title + '</h2><ul class="planning"></ul></li>');
+					for(var i = 0; i<e.root.planning.length; i++){
+						if(e.root.planning[i].url === dataSerie.url){
+							var date = new Date(e.root.planning[i].date*1000);
+							var year = date.getFullYear();
+							var day = date.getDate();
+							var month = date.getMonth()+1;
+							$(".planning").append('<li class="serie">' + e.root.planning[i].number + ' sera diffusé le : ' + day + ' / ' + month + ' / ' + year + ' sur ' + dataSerie.infosSerie.channel + '</li>');
+						}
+					}				
+				}
+			}
 		});
 	};
+
 
 	$( function () {
 		// --- onload routines
