@@ -40,6 +40,19 @@
     },
     {
       "search": [
+        "right",
+        "arrow"
+      ],
+      "code": 61609,
+      "uid": "19b04848ae7332d2c0ea2a9e19064037",
+      "css": "right-circled",
+      "orig_css": "right-circled",
+      "orig_code": 61609,
+      "src": "fontawesome",
+      "from": 61609
+    },
+    {
+      "search": [
         "profile",
         "contact",
         "user"
@@ -64,6 +77,19 @@
       "orig_code": 128269,
       "src": "entypo",
       "from": 128269
+    },
+    {
+      "search": [
+        "back",
+        "return"
+      ],
+      "code": 128281,
+      "uid": "3ba4275937db277075fc47d6b5a69a2e",
+      "css": "back",
+      "orig_css": "back",
+      "orig_code": 128281,
+      "src": "entypo",
+      "from": 128281
     }
   ]
 }

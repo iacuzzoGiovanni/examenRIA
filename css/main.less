@@ -360,9 +360,69 @@ nav h2{
 .serie span{
     float: left;
     display: block;
-    width: 80%;
+    width: 60%;
 }
 
+#infosSerie{
+    position: absolute;
+    width: 100%;
+    left: 100%;
+    top: 4em;
+    .box-sizing;
+    padding: 1.5em;
+    .gradient-blue-light(#fff, #ecf8fe);
+}
+
+#infosSerie h1{
+    font-size: 1.5em;
+    margin: 0;
+}
+
+#infosSerie h2{
+    font-size: 1em;
+    margin-bottom: 0;
+}
+
+#infosSerie p{
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.saisons{
+    display: block;
+    margin-top: 1em;
+}
+
+#infosSerie button{
+    .rounded-corners(3px);
+    border: 1px solid #2C93BC;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, .2), inset 0px 17px 0px 0px rgba(255, 255, 255, .1);
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, .2), inset 0px 17px 0px 0px rgba(255, 255, 255, .1);
+    padding: 0.5em;
+    text-shadow: 0px -1px 1px rgba(0, 0, 0, .5);
+    filter: dropshadow(color=rgba(0, 0, 0, .5), offx=0, offy=-1);
+    width: 100%;
+    color: #fff;
+}
+
+.icon-plus-circled{
+    .gradient-blue-light(#00b5f0, @color);
+}
+
+.icon-back{
+    .gradient-blue-light(#555, #333);
+    margin-top: 1em;
+    border: 1px solid #444 !important;
+}
+
+#maSerie{
+    position: absolute;
+    width: 100%;
+    top: 4em;
+    left: 100%;
+    padding: 1.5em;
+    .gradient-blue-light(#fff, #ecf8fe);
+}
 /* ==========================================================================
    Helper classes
    ========================================================================== */
