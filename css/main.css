@@ -579,6 +579,13 @@ nav h2 {
   border: 1px solid #444 !important;
 }
 #maSerie {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+
+  -webkit-box-sizing: border-box;
+  /* Safari */
+
   position: absolute;
   width: 100%;
   top: 4em;
@@ -608,6 +615,15 @@ nav h2 {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#ecf8fe, GradientType=0);
   /* IE6-9 */
 
+}
+.vu {
+  background-color: #00a4ed;
+}
+.nonVu {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+.episode button {
+  float: right;
 }
 /* ==========================================================================
    Helper classes

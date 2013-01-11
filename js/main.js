@@ -58,6 +58,8 @@
 	}; // On enregistre l'utilisateur en récupérant son prénom simplement
 
 	var listSeries = function(e){
+		$infosBox.hide();
+		$maSerie.hide();
 		$searchButton.hide();
 		$searchBox.hide();
 		$listeDesSeries.empty();
@@ -69,7 +71,7 @@
 		for( var serie in window.localStorage ){
 			if( serie.substring( 0, 6 ) === "serie_" ){
 				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
-				$listeDesSeries.append('<li class="serie" data-url="' + dataSerie.url +'"><span>' + dataSerie.title + '</span><button class="icon-right-circled aSaison"></button></li>');				
+				$listeDesSeries.append('<li class="serie" data-titre="' + dataSerie.title +'" data-url="' + dataSerie.url +'"><span>' + dataSerie.title + '</span><button class="icon-right-circled aSaison"></button></li>');				
 			}
 		}
 	}; // On affiche tout les titres des séries ajoutée par l'utilisateur
@@ -80,7 +82,6 @@
 
 		if(sKeyWord === "" || sKeyWord.length < 3){
 
-			//listSeries(oIfByClick);
 		}else{
 			$.ajax(
 				{
@@ -103,38 +104,20 @@
 	var showHideMenu = function(e){
 		if(bMenu){
 			bMenu = false;
-			$sideMenu.animate({
-				    left: '-=75%'
-				  }, 1000);
-			$content.animate({
-				    left: '-=75%'
-				  }, 1000);
-			$nav.animate({
-				    left: '-=75%'
-				  }, 1000);
-			$searchBox.animate({
-				    left: '-=75%'
-				  }, 1000);
-			$infosBox.animate({
-					left: '-=75%'
-				  }, 1000);
+			$sideMenu.animate({left: '-=75%'}, 1000);
+			$content.animate({left: '-=75%'}, 1000);
+			$nav.animate({left: '-=75%'}, 1000);
+			$searchBox.animate({left: '-=75%'}, 1000);
+			$infosBox.animate({left: '-=75%'}, 1000);
+			$maSerie.animate({left: '-=75%'}, 1000);
 		}else{
 			bMenu = true;
-			$sideMenu.animate({
-				    left: '+=75%'
-				  }, 1000);
-			$content.animate({
-				    left: '+=75%'
-				  }, 1000);
-			$nav.animate({
-				    left: '+=75%'
-				  }, 1000);
-			$searchBox.animate({
-				    left: '+=75%'
-				  }, 1000);
-			$infosBox.animate({
-					left: '+=75%'
-				  }, 1000);
+			$sideMenu.animate({left: '+=75%'}, 1000);
+			$content.animate({left: '+=75%'}, 1000);
+			$nav.animate({left: '+=75%'}, 1000);
+			$searchBox.animate({left: '+=75%'}, 1000);
+			$infosBox.animate({left: '+=75%'}, 1000);
+			$maSerie.animate({left: '+=75%'}, 1000);
 		}
 	}; // On anime l'interface
 
@@ -142,26 +125,14 @@
 		$searchBox.show();
 		if(bSearch){
 			bSearch = false;
-			$content.animate({
-				    marginTop: '-=2em'
-				  }, 500);
-			$searchBox.animate({
-				    top: '-=2em'
-				  }, 500);
-			$infosBox.animate({
-				    top: '-=2em'
-				  }, 500);
+			$content.animate({marginTop: '-=2em'}, 500);
+			$searchBox.animate({top: '-=2em'}, 500);
+			$infosBox.animate({top: '-=2em'}, 500);
 		}else{
 			bSearch = true;
-			$content.animate({
-				    marginTop: '+=2em'
-				  }, 500);
-			$searchBox.animate({
-				    top: '+=2em'
-				  }, 500);
-			$infosBox.animate({
-				    top: '+=2em'
-				  }, 500);
+			$content.animate({marginTop: '+=2em'}, 500);
+			$searchBox.animate({top: '+=2em'}, 500);
+			$infosBox.animate({top: '+=2em'}, 500);
 		}
 	}; // On montre ou as la zone de recherche
 
@@ -181,6 +152,7 @@
 			break;
 			case 2:
 			$pageName.text("-- ajouter une série --");
+			break;
 			case 3:
 			$pageName.text("-- mon planning --");
 			break;
@@ -191,18 +163,29 @@
 		var objetThis = $(this);
 			
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
-			var data = {},
-				laSerie = {"url": objetThis.parent().attr("data-url"),
-				   	   "title" : objetThis.parent().attr("data-titre")
-				      };
-
-			data.banner = e.root.show.banner;
-			data.channel = e.root.show.network;
-			laSerie.infosSerie = data;
-			window.localStorage.setItem("serie_" + objetThis.parent().attr("data-titre"), JSON.stringify(laSerie));
+			getDataSerie(objetThis.parent().attr("data-url"), function(ev){
+				var seasons = ev.root.seasons,
+					data = {},
+					laSerie = {"url": objetThis.parent().attr("data-url"),
+						   	   "title" : objetThis.parent().attr("data-titre"),
+						   	   "seasons" : seasons
+				    };
+				
+				for(var i = 0; i<seasons.length; i++){
+					for(var j = 0; j<seasons[i].episodes.length; j++){
+						seasons[i].episodes[j].view = false;
+					}
+				}
+				
+				data.banner = e.root.show.banner;
+				data.channel = e.root.show.network;
+				laSerie.infosSerie = data;
+				window.localStorage.setItem("serie_" + objetThis.parent().attr("data-titre"), JSON.stringify(laSerie));
+			});
 		});
-			
-	}; // On ajoute la serie dans le local storage avec quelques infos de bases
+
+	}; // On ajoute la serie dans le local storage
+
 
 	var getInfoSerie = function(urlSerie, successCallback){
 		$.ajax(
@@ -222,14 +205,8 @@
 
 	var displayInfoSerie = function(e){
 		var objetThis = $(this);
-		$content.animate({
-				    left: '-=100%'
-				  }, 1000);
-		$infosBox.animate({
-				    left: '-=100%'
-				  }, 1000, function(){
-				  	$content.hide();
-				  });
+		$content.animate({left: '-=100%'}, 1000);
+		$infosBox.animate({left: '-=100%'}, 1000, function(){$content.hide();});
 		
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
 			$infosBox.attr('data-url', e.root.show.url);
@@ -244,25 +221,17 @@
 
 	var calculateNumberOfSeasons = function(data){
 		var count = 0;
-
 	    for(var prop in data) {
 	    	if(data.hasOwnProperty(prop))
 	    		++count;
 	    }
-
 	    return count;
 	}; // On calcule le nombre de saison
 
 	var displaySearch = function(e){
 		$content.show();
-		$content.animate({
-				    left: '+=100%'
-				  }, 1000);
-		$infosBox.animate({
-				    left: '+=100%'
-				  }, 1000, function(){
-				  	$("html").scrollTop(0);
-				  });
+		$content.animate({left: '+=100%'}, 1000);
+		$infosBox.animate({left: '+=100%'}, 1000, function(){$("html").scrollTop(0); });
 	}; // On retourne à la recherche
 
 	var getDataSerie = function(urlSerie, successCallback){
@@ -279,31 +248,33 @@
 					}
 				}
 			)
-	};
+	}; //On récupère les nfos des séries
 
 	var afficheSaison = function(e){
-		var objetThis = $(this);
+		$maSerie.show();
+		$content.animate({left: '-=100%'}, 1000);
+		$maSerie.animate({left: '-=100%'}, 1000, function(){$content.hide();});
 		
-		$content.animate({
-				    left: '-=100%'
-				  }, 1000);
-		$maSerie.animate({
-				    left: '-=100%'
-				  }, 1000, function(){
-				  	$content.hide();
-				  });
+		for( var serie in window.localStorage ){
+			if( serie === "serie_"+$(this).parent().attr('data-titre') ){
+				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+				for(var i = 0; i<dataSerie.seasons.length; i++){
+					$maSerie.append('<h2>Saison ' + (parseInt(i)+parseInt(1)) + '</h2>');
+					for(var j = 0; j<dataSerie.seasons[i].episodes.length; j++){
+						var nb = (parseInt(j)+parseInt(1)),
+							view;
 
-		getDataSerie(objetThis.parent().attr("data-url"), function(e){
-			for(var i = 0; i<e.root.seasons.length; i++){
-				$maSerie.append('<h2>Saison ' + (parseInt(i)+parseInt(1)) + '</h2>');
-
-				for(var j = 0; j<e.root.seasons[i].episodes.length; j++){
-					var nb = (parseInt(j)+parseInt(1));
-					$maSerie.append('<p>Episode ' + nb.toString() + ' : ' + e.root.seasons[i].episodes[j].title + '</p>');
+						if(dataSerie.seasons[i].episodes[j].view==true){
+							view = 'vu';
+						}else{
+							view = 'nonVu';
+						}
+						$maSerie.append('<p class="' + view + ' episode" data-titre="' + dataSerie.title +'" data-saison="' + dataSerie.seasons[i].number + '" data-episode="' + dataSerie.seasons[i].episodes[j].episode + '">Episode ' + nb.toString() + ' : ' + dataSerie.seasons[i].episodes[j].title + '<button>vu</button</p>');
+					}
 				}
 			}
-		});
-	};
+		}
+	}; // On affiche les saisons d'une série
 
 	var getDataPlanning = function(successCallback){
 		$.ajax(
@@ -319,9 +290,11 @@
 					}
 				}
 			)
-	};
+	}; //On récupère les données du planning
 
 	var afficherMonPlanning = function(e){
+		$maSerie.hide();
+		$content.show();
 		$listeDesSeries.empty();
 		iCurrentPage = 3;
 		currentPageName();
@@ -330,24 +303,76 @@
 			for( var serie in window.localStorage ){
 				if( serie.substring( 0, 6 ) === "serie_" ){
 					var dataSerie = JSON.parse(window.localStorage.getItem(serie));
-					$listeDesSeries.append('<li><h2 class="titrePlanning">' + dataSerie.title + '</h2><ul class="planning"></ul></li>');
+					$listeDesSeries.append('<li><h2 class="titrePlanning">' + dataSerie.title + '</h2><ul class="' + dataSerie.url + '"></ul></li>');
 					for(var i = 0; i<e.root.planning.length; i++){
 						if(e.root.planning[i].url === dataSerie.url){
 							var date = new Date(e.root.planning[i].date*1000);
 							var year = date.getFullYear();
 							var day = date.getDate();
 							var month = date.getMonth()+1;
-							$(".planning").append('<li class="serie">' + e.root.planning[i].number + ' sera diffusé le : ' + day + ' / ' + month + ' / ' + year + ' sur ' + dataSerie.infosSerie.channel + '</li>');
+							$("." + dataSerie.url).append('<li class="serie">' + e.root.planning[i].number + ' sera diffusé le : ' + day + ' / ' + month + ' / ' + year + ' sur ' + dataSerie.infosSerie.channel + '</li>');
 						}
 					}				
 				}
 			}
 		});
-	};
+	}; // On affiche le planning de tous mes épisodes
 
+	var updateData = function(){
+		var i=0,
+			n=0,
+			urlS = [],
+			localNbEpisodes = [],
+			episodesManquant = [];
+		for( var serie in window.localStorage){
+			if( serie.substring( 0, 6 ) === "serie_" ){
+				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+				localNbEpisodes[i] = dataSerie.seasons[dataSerie.seasons.length-1].episodes.length;
+ 				urlS[i] = dataSerie.url;
+ 				getDataSerie(urlS[i], function(e){
+					var betaDbnBEpisodes = e.root.seasons[e.root.seasons.length-1].episodes.length;
+					if(localNbEpisodes[n] === betaDbnBEpisodes){
+	 					//var nbEpisodeM = betaDbnBEpisodes - localNbEpisodes[n];
+	 					var nbEpisodeM = 2;
+	 					var episodeAajouter = episodeAajouterF(nbEpisodeM, betaDbnBEpisodes);
+	 					for(var k = 0; k<episodeAajouter.length; k++){
+							episodesManquant[k] = e.root.seasons[dataSerie.seasons.length-1].episodes[episodeAajouter[k]-1];
+	 						dataSerie.seasons[dataSerie.seasons.length-1].episodes[episodeAajouter[k]-1] = episodesManquant[k];
+	 						dataSerie.seasons[dataSerie.seasons.length-1].episodes[episodeAajouter[k]-1].view = false;
+	 						window.localStorage.setItem('serie_'+dataSerie.title, JSON.stringify(dataSerie));
+	 					}
+	 				}
+	 				n++;
+ 				});
+				i++;
+			}
+		}
+	}; // On vérifie si de nouveaux épisodes sont parru ou pas et si oui on les ajoute au localStorage
+
+	var episodeAajouterF = function(nb, top){
+		var nbI = nb;
+		var tab = [];
+		for(var i = 0; i<nb; i++){
+			tab[i] = top-(nbI-1);
+			nbI--;
+		}
+		return tab;
+	} // On calcule les numero des épisodes qu'il faut rajotuer
+
+	var vuPasVu = function(e){
+		$(this).parent().attr('class', 'vu episode');
+		for( var serie in window.localStorage){
+			if(serie === 'serie_'+$(this).parent().attr('data-titre')){
+				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+				dataSerie.seasons[($(this).parent().attr('data-saison'))-1].episodes[($(this).parent().attr('data-episode'))-1].view = true;
+				window.localStorage.setItem("serie_" + $(this).parent().attr("data-titre"), JSON.stringify(dataSerie));
+			}
+		}
+	}; // On indique si un épisode à été vu ou pas
 
 	$( function () {
 		// --- onload routines
+		updateData();
 		$("#prenom").val('');
 		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");
 		checkIfAlreadyLogIn();
@@ -362,10 +387,9 @@
 		$("#infosSerie.icon-plus-circled").on("click", addSerie);
 		$("#toList").on("click", listSeries);
 		$(".aSaison").live("click", afficheSaison);
+		$("#maSerie button").live("click", vuPasVu);
 		$toPlan.on("click", afficherMonPlanning);
-
 		console.log(window.localStorage);
 	} );
-
 }( jQuery ) );
 
