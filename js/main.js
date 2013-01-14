@@ -32,6 +32,8 @@
 			$content.hide();
 			$nav.hide();
 			$searchBox.hide();
+			$infosBox.hide();
+			$maSerie.hide();
 		}else{
 			eSignIn.remove();
 			$content.show();
@@ -58,6 +60,8 @@
 	}; // On enregistre l'utilisateur en récupérant son prénom simplement
 
 	var listSeries = function(e){
+		$content.css('marginTop', '4em');
+		$content.show();
 		$infosBox.hide();
 		$maSerie.hide();
 		$searchButton.hide();
@@ -121,23 +125,11 @@
 		}
 	}; // On anime l'interface
 
-	var showHideSearch = function(e){
-		$searchBox.show();
-		if(bSearch){
-			bSearch = false;
-			$content.animate({marginTop: '-=2em'}, 500);
-			$searchBox.animate({top: '-=2em'}, 500);
-			$infosBox.animate({top: '-=2em'}, 500);
-		}else{
-			bSearch = true;
-			$content.animate({marginTop: '+=2em'}, 500);
-			$searchBox.animate({top: '+=2em'}, 500);
-			$infosBox.animate({top: '+=2em'}, 500);
-		}
-	}; // On montre ou as la zone de recherche
-
 	var goToAddPage = function(e){
 		$searchButton.show();
+		$searchBox.css("top", "4em");
+		$content.css("marginTop", "6em");
+		$searchBox.show();
 		iCurrentPage = 2;
 		currentPageName();
 		showHideMenu();
@@ -161,7 +153,7 @@
 
 	var addSerie = function(event){
 		var objetThis = $(this);
-			
+		$searchBox.show();
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
 			getDataSerie(objetThis.parent().attr("data-url"), function(ev){
 				var seasons = ev.root.seasons,
@@ -205,6 +197,8 @@
 
 	var displayInfoSerie = function(e){
 		var objetThis = $(this);
+		$("html").scrollTop(0);
+		$infosBox.show();
 		$content.animate({left: '-=100%'}, 1000);
 		$infosBox.animate({left: '-=100%'}, 1000, function(){$content.hide();});
 		
@@ -215,7 +209,7 @@
 			$("#infosSerie h1").text(e.root.show.title);
 			$(".description").text(e.root.show.description);
 			$(".genre p").text(e.root.show.genres);
-			$(".saisons p").text(e.root.show.seasons[0].length);
+			$(".saisons p").text(calculateNumberOfSeasons(e.root.show.seasons));
 		});
 	}; //On affiche mes infos d'une série
 
@@ -252,7 +246,10 @@
 
 	var afficheSaison = function(e){
 		$maSerie.show();
-		$content.animate({left: '-=100%'}, 1000);
+		$content.animate({left: '-=100%'}, 1000, function(){
+															$content.hide();
+															$content.animate({left: '+=100%'}, 1000);
+															});
 		$maSerie.animate({left: '-=100%'}, 1000, function(){$content.hide();});
 		
 		for( var serie in window.localStorage ){
@@ -262,18 +259,22 @@
 					$maSerie.append('<h2>Saison ' + (parseInt(i)+parseInt(1)) + '</h2>');
 					for(var j = 0; j<dataSerie.seasons[i].episodes.length; j++){
 						var nb = (parseInt(j)+parseInt(1)),
-							view;
+							view,
+							icon;
 
 						if(dataSerie.seasons[i].episodes[j].view==true){
 							view = 'vu';
+							icon = 'icon-check'
 						}else{
 							view = 'nonVu';
+							icon = 'icon-cancel'
 						}
-						$maSerie.append('<p class="' + view + ' episode" data-titre="' + dataSerie.title +'" data-saison="' + dataSerie.seasons[i].number + '" data-episode="' + dataSerie.seasons[i].episodes[j].episode + '">Episode ' + nb.toString() + ' : ' + dataSerie.seasons[i].episodes[j].title + '<button>vu</button</p>');
+						$maSerie.append('<a href="#" class="' + view + ' episode" data-titre="' + dataSerie.title +'" data-saison="' + dataSerie.seasons[i].number + '" data-episode="' + dataSerie.seasons[i].episodes[j].episode + '">Episode ' + nb.toString() + ' : ' + dataSerie.seasons[i].episodes[j].title + '<span class="' + icon + '"></span></a>');
 					}
 				}
 			}
 		}
+		e.preventDefault();
 	}; // On affiche les saisons d'une série
 
 	var getDataPlanning = function(successCallback){
@@ -293,6 +294,8 @@
 	}; //On récupère les données du planning
 
 	var afficherMonPlanning = function(e){
+		$content.css("marginTop", "4em");
+		$searchBox.css("top", "2em");
 		$maSerie.hide();
 		$content.show();
 		$listeDesSeries.empty();
@@ -332,8 +335,7 @@
  				getDataSerie(urlS[i], function(e){
 					var betaDbnBEpisodes = e.root.seasons[e.root.seasons.length-1].episodes.length;
 					if(localNbEpisodes[n] === betaDbnBEpisodes){
-	 					//var nbEpisodeM = betaDbnBEpisodes - localNbEpisodes[n];
-	 					var nbEpisodeM = 2;
+	 					var nbEpisodeM = betaDbnBEpisodes - localNbEpisodes[n];
 	 					var episodeAajouter = episodeAajouterF(nbEpisodeM, betaDbnBEpisodes);
 	 					for(var k = 0; k<episodeAajouter.length; k++){
 							episodesManquant[k] = e.root.seasons[dataSerie.seasons.length-1].episodes[episodeAajouter[k]-1];
@@ -360,12 +362,14 @@
 	} // On calcule les numero des épisodes qu'il faut rajotuer
 
 	var vuPasVu = function(e){
-		$(this).parent().attr('class', 'vu episode');
+		e.preventDefault();
+		$(this).attr('class', 'vu episode');
+		$(this).children("span").attr("class", "icon-check");
 		for( var serie in window.localStorage){
-			if(serie === 'serie_'+$(this).parent().attr('data-titre')){
+			if(serie === 'serie_'+$(this).attr('data-titre')){
 				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
-				dataSerie.seasons[($(this).parent().attr('data-saison'))-1].episodes[($(this).parent().attr('data-episode'))-1].view = true;
-				window.localStorage.setItem("serie_" + $(this).parent().attr("data-titre"), JSON.stringify(dataSerie));
+				dataSerie.seasons[($(this).attr('data-saison'))-1].episodes[($(this).attr('data-episode'))-1].view = true;
+				window.localStorage.setItem("serie_" + $(this).attr("data-titre"), JSON.stringify(dataSerie));
 			}
 		}
 	}; // On indique si un épisode à été vu ou pas
@@ -378,7 +382,6 @@
 		checkIfAlreadyLogIn();
 		$("#readyToGo").on("click", registerUser);
 		$(".icon-menu").on("click", showHideMenu);
-		$searchButton.on("click", showHideSearch);
 		$("#seriesSearch").on("keyup", search);
 		$toAdd.on("click", goToAddPage);
 		$(".icon-plus-circled").live("click", addSerie);
@@ -387,7 +390,7 @@
 		$("#infosSerie.icon-plus-circled").on("click", addSerie);
 		$("#toList").on("click", listSeries);
 		$(".aSaison").live("click", afficheSaison);
-		$("#maSerie button").live("click", vuPasVu);
+		$(".episode").live("click", vuPasVu);
 		$toPlan.on("click", afficherMonPlanning);
 		console.log(window.localStorage);
 	} );

@@ -31,9 +31,10 @@
 }
 
 .icon-menu:before { content: '\2630'; } /* '☰' */
+.icon-check:before { content: '\2713'; } /* '✓' */
+.icon-cancel:before { content: '\2715'; } /* '✕' */
 .icon-plus-circled:before { content: '\2795'; } /* '➕' */
 .icon-info-circled:before { content: '\e705'; } /* '' */
 .icon-right-circled:before { content: '\f0a9'; } /* '' */
 .icon-user:before { content: '👤'; } /* '\1f464' */
-.icon-search:before { content: '🔍'; } /* '\1f50d' */
 .icon-back:before { content: '🔙'; } /* '\1f519' */
