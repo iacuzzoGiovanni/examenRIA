@@ -414,6 +414,7 @@ nav h2 {
 }
 .serie button {
   float: right;
+  color: #ffffff;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -445,11 +446,11 @@ nav h2 {
   /* IE6-9 */
 
   border: 1px solid #62c9f5;
-  -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 20px 0px 0px rgba(255, 255, 255, 0.05);
-  box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 20px 0px 0px rgba(255, 255, 255, 0.05);
+  -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 17px 0px 0px rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 17px 0px 0px rgba(255, 255, 255, 0.2);
   padding: 0.5em;
-  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
-  filter: dropshadow(color=rgba(255, 255, 255, 0.5), offx=0, offy=1);
+  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);
+  filter: dropshadow(color=rgba(0, 0, 0, 0.1), offx=0, offy=-1);
 }
 .icon-plus-circled {
   margin-right: 1em;
@@ -628,6 +629,7 @@ nav h2 {
   background-color: #b0e2fa;
 }
 .episode {
+  overflow: hidden;
   display: block;
   margin-bottom: 0.5em;
   padding: 0.5em;
@@ -642,7 +644,16 @@ nav h2 {
   border-radius: 3px;
   border: none;
 }
-.episode span {
+.episode span:first-child {
+  float: left;
+  display: block;
+  width: 60%;
+}
+.icon-cancel {
+  float: right;
+  margin-left: 1em;
+}
+.icon-check {
   float: right;
 }
 #feedback {

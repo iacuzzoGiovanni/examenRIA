@@ -76,12 +76,13 @@
 		for( var serie in window.localStorage ){
 			if( serie.substring( 0, 6 ) === "serie_" ){
 				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
-				$listeDesSeries.append('<li class="serie" data-titre="' + dataSerie.title +'" data-url="' + dataSerie.url +'"><span>' + dataSerie.title + '</span><button class="icon-right-circled aSaison"></button></li>');				
+				$listeDesSeries.append('<li class="serie" data-titre="' + dataSerie.title +'" data-url="' + dataSerie.url +'"><span>' + dataSerie.title + '</span><button data-titre="' + dataSerie.title + '" class="icon-cancel liste"></button><button class="icon-right-circled aSaison"></button></li>');				
 			}
 		}
 	}; // On affiche tout les titres des séries ajoutée par l'utilisateur
 
 	var search = function(e){
+		$content.show();
 		$listeDesSeries.empty();
 		var sKeyWord = $("#seriesSearch").val();
 
@@ -94,12 +95,18 @@
 					type:"get",
 					dataType: "jsonp",
 					success:function(e){
-						for (var i = 0; i<e.root.shows.length; i++) {
-							//$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
-							if(!checkIfAlreadyAdded(e.root.shows[i].url)){
-								$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
+						console.log(e.root.shows.length);
+						if(e.root.shows.length === 0){
+							$listeDesSeries.empty();
+							$listeDesSeries.append('<li class="serie"><span style="width: 100%">aucune(s) série(s) n\'a été trouvée(s)</span></li>');
+						}else{
+							$listeDesSeries.empty();
+							for (var i = 0; i<e.root.shows.length; i++) {
+								if(!checkIfAlreadyAdded(e.root.shows[i].url)){
+									$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
+								}
 							}
-						};
+						}
 					},
 					error:function(e,f,g){
 						$listeDesSeries.append('<li class="errors">Une erreur s\'est produite lors du traitement de la requête</li>');
@@ -171,13 +178,6 @@
 
 	var addSerie = function(event){
 		var objetThis = $(this);
-		/*for(serie in window.localStorage){
-			if(serie.substring( 0, 6 ) === "serie_"){
-				if(serie.url === objetThis.parent().attr("data-url")){
-
-				}
-			}
-		}*/
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
 			getDataSerie(objetThis.parent().attr("data-url"), function(ev){
 				var seasons = ev.root.seasons,
@@ -298,7 +298,7 @@
 							view = 'nonVu';
 							icon = 'icon-cancel'
 						}
-						$maSerie.append('<a href="#" class="' + view + ' episode" data-titre="' + dataSerie.title +'" data-saison="' + dataSerie.seasons[i].number + '" data-episode="' + dataSerie.seasons[i].episodes[j].episode + '">Episode ' + nb.toString() + ' : ' + dataSerie.seasons[i].episodes[j].title + '<span class="' + icon + '"></span></a>');
+						$maSerie.append('<a href="#" class="' + view + ' episode" data-titre="' + dataSerie.title +'" data-saison="' + dataSerie.seasons[i].number + '" data-episode="' + dataSerie.seasons[i].episodes[j].episode + '"><span>Episode ' + nb.toString() + ' : ' + dataSerie.seasons[i].episodes[j].title + '</span><span class="' + icon + '"></span></a>');
 					}
 				}
 			}
@@ -393,7 +393,7 @@
 	var vuPasVu = function(e){
 		e.preventDefault();
 		$(this).attr('class', 'vu episode');
-		$(this).children("span").attr("class", "icon-check");
+		$(this).children("span:last-child").attr("class", "icon-check");
 		for( var serie in window.localStorage){
 			if(serie === 'serie_'+$(this).attr('data-titre')){
 				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
@@ -410,12 +410,22 @@
 	}; // Settings des feeback
 
 	var displayFeedback = function(data){
+		$feedback.show();
 		$feedback.children("span").text(data);
 		$feedback.animate({opacity: '+=.8'}, 1000, function(){$feedback.delay(2000).animate({opacity:"-=.8"}, 1000);});
 	}; // On affiche les feedback
 
+	var deleteSerie = function(e){
+		console.log($(this).attr("data-titre"));
+		window.localStorage.removeItem("serie_"+$(this).attr("data-titre"));
+		displayFeedback('la série à bien été supprimé');
+		setFeeback();
+		$(this).parent().remove();
+	};
+
 	$( function () {
 		// --- onload routines
+		$feedback.hide();
 		setFeeback();
 		updateData();
 		$("#prenom").val('');
@@ -433,6 +443,7 @@
 		$(".aSaison").live("click", afficheSaison);
 		$(".episode").live("click", vuPasVu);
 		$toPlan.on("click", afficherMonPlanning);
+		$(".icon-cancel.liste").live("click", deleteSerie);
 		console.log(window.localStorage);
 	} );
 }( jQuery ) );
