@@ -25,6 +25,7 @@
 	var $infosBox = $("#infosSerie");
 	var $maSerie = $("#maSerie");
 	var $toPlan = $("#toPlan");
+	var $feedback = $("#feedback");
 	
 	// --- methods
 	var checkIfAlreadyLogIn = function(){
@@ -94,7 +95,10 @@
 					dataType: "jsonp",
 					success:function(e){
 						for (var i = 0; i<e.root.shows.length; i++) {
-							$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
+							//$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
+							if(!checkIfAlreadyAdded(e.root.shows[i].url)){
+								$listeDesSeries.append('<li class="serie" data-url="' + e.root.shows[i].url + '" data-titre="' + e.root.shows[i].title + '"><span>' + e.root.shows[i].title +'</span><button class="icon-info-circled"></button><button class="icon-plus-circled"></button></li>');
+							}
 						};
 					},
 					error:function(e,f,g){
@@ -104,6 +108,19 @@
 			)
 		}
 	}; // On recherche une série particulière à l'aide des mots entrés par l'utilisateur
+
+	var checkIfAlreadyAdded = function(data){
+		var theSerie;
+		for(var serie in window.localStorage){
+			if(serie.substring( 0, 6 ) === "serie_"){
+				var dataSerie = JSON.parse(window.localStorage.getItem(serie));
+				if(data === dataSerie.url){
+					theSerie = true;
+				}
+			}
+		}
+		return theSerie;
+	};
 
 	var showHideMenu = function(e){
 		if(bMenu){
@@ -126,6 +143,7 @@
 	}; // On anime l'interface
 
 	var goToAddPage = function(e){
+		$maSerie.hide();
 		$searchButton.show();
 		$searchBox.css("top", "4em");
 		$content.css("marginTop", "6em");
@@ -153,7 +171,13 @@
 
 	var addSerie = function(event){
 		var objetThis = $(this);
-		$searchBox.show();
+		/*for(serie in window.localStorage){
+			if(serie.substring( 0, 6 ) === "serie_"){
+				if(serie.url === objetThis.parent().attr("data-url")){
+
+				}
+			}
+		}*/
 		getInfoSerie(objetThis.parent().attr("data-url"), function(e){
 			getDataSerie(objetThis.parent().attr("data-url"), function(ev){
 				var seasons = ev.root.seasons,
@@ -173,6 +197,8 @@
 				data.channel = e.root.show.network;
 				laSerie.infosSerie = data;
 				window.localStorage.setItem("serie_" + objetThis.parent().attr("data-titre"), JSON.stringify(laSerie));
+				displayFeedback('votre série à bien été ajouté dans la base de données');
+				setFeeback();
 			});
 		});
 
@@ -198,6 +224,7 @@
 	var displayInfoSerie = function(e){
 		var objetThis = $(this);
 		$("html").scrollTop(0);
+		$searchBox.css("top", "2em");
 		$infosBox.show();
 		$content.animate({left: '-=100%'}, 1000);
 		$infosBox.animate({left: '-=100%'}, 1000, function(){$content.hide();});
@@ -224,6 +251,7 @@
 
 	var displaySearch = function(e){
 		$content.show();
+		$searchBox.css("top", "4em");
 		$content.animate({left: '+=100%'}, 1000);
 		$infosBox.animate({left: '+=100%'}, 1000, function(){$("html").scrollTop(0); });
 	}; // On retourne à la recherche
@@ -245,6 +273,7 @@
 	}; //On récupère les nfos des séries
 
 	var afficheSaison = function(e){
+		$maSerie.css("left", "100%");
 		$maSerie.show();
 		$content.animate({left: '-=100%'}, 1000, function(){
 															$content.hide();
@@ -374,8 +403,20 @@
 		}
 	}; // On indique si un épisode à été vu ou pas
 
+	var setFeeback = function(){
+		$feedback.css("top", (($(window).height()/2)-($feedback.height()/2))+"px");
+		$feedback.css("left", (($(window).width()/2)-($feedback.width()/2))+"px");
+		$feedback.children("span").css("top", $feedback.height()/2-$feedback.children("span").height()/2);
+	}; // Settings des feeback
+
+	var displayFeedback = function(data){
+		$feedback.children("span").text(data);
+		$feedback.animate({opacity: '+=.8'}, 1000, function(){$feedback.delay(2000).animate({opacity:"-=.8"}, 1000);});
+	}; // On affiche les feedback
+
 	$( function () {
 		// --- onload routines
+		setFeeback();
 		updateData();
 		$("#prenom").val('');
 		$("#sideMenu h1").text("Que veux-tu faire "+ window.localStorage.getItem("prenom") +" ?");

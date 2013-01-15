@@ -645,6 +645,27 @@ nav h2 {
 .episode span {
   float: right;
 }
+#feedback {
+  opacity: .0;
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border: none;
+  color: #ffffff;
+  background-color: #000000;
+  text-align: center;
+  z-index: 1000;
+}
+#feedback span {
+  font-size: 1em;
+  display: block;
+  position: relative;
+}
 /* ==========================================================================
    Helper classes
    ========================================================================== */

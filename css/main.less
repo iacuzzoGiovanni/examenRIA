@@ -453,6 +453,24 @@ nav h2{
 .episode span{
     float: right;
 }
+
+#feedback{
+    opacity: .0;
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    .rounded-corners(3px);
+    color: @blanc;
+    background-color: rgba(0,0,0,1);
+    text-align: center;
+    z-index: 1000;
+}
+
+#feedback span{
+    font-size: 1em;
+    display: block;
+    position: relative;
+}
 /* ==========================================================================
    Helper classes
    ========================================================================== */
