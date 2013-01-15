@@ -385,6 +385,12 @@ nav h2 {
   background: none;
   color: #ffffff;
 }
+#seriesSearch:moz-placeholder {
+  color: #ffffff;
+}
+#seriesSearch:-webkit-input-placeholder {
+  color: #ffffff;
+}
 .serie {
   background: #ffffff;
   /* Old browsers */

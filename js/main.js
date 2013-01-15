@@ -225,6 +225,7 @@
 		var objetThis = $(this);
 		$("html").scrollTop(0);
 		$searchBox.css("top", "2em");
+		$infosBox.css("left", "100%");
 		$infosBox.show();
 		$content.animate({left: '-=100%'}, 1000);
 		$infosBox.animate({left: '-=100%'}, 1000, function(){$content.hide();});
@@ -412,7 +413,7 @@
 	var displayFeedback = function(data){
 		$feedback.show();
 		$feedback.children("span").text(data);
-		$feedback.animate({opacity: '+=.8'}, 1000, function(){$feedback.delay(2000).animate({opacity:"-=.8"}, 1000);});
+		$feedback.animate({opacity: '+=.8'}, 1000, function(){$feedback.delay(2000).animate({opacity:"-=.8"}, 1000, function(){$feedback.hide();});});
 	}; // On affiche les feedback
 
 	var deleteSerie = function(e){
